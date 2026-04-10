@@ -1,6 +1,7 @@
 "use client"
 import { useChat } from "@/hooks/useChat"
 import { useEffect, useMemo, useRef, useState } from "react"
+import ReactMarkdown from "react-markdown"
 
 const roleOptions = [
   {
@@ -165,6 +166,7 @@ export default function Home() {
 
               {messages.map((msg, i) => {
                 const isUser = msg.role === "user"
+                const isLastAssistant = !isUser && i === messages.length - 1
                 return (
                   <div key={i} className={`grid gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-3xl rounded-[1.75rem] px-6 py-4 text-sm leading-6 shadow-[0_18px_50px_-20px_rgba(15,23,42,0.65)] ${isUser ? "bg-cyan-500/90 text-white" : "bg-slate-900/90 text-slate-200"}`}>
@@ -178,7 +180,20 @@ export default function Home() {
                           </span>
                         ) : null}
                       </div>
-                      <p>{msg.content}</p>
+                      {isLastAssistant && isStreaming && !msg.content ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                          </div>
+                          <span className="text-slate-400">Thinking...</span>
+                        </div>
+                      ) : (
+                        <div className="prose prose-invert prose-sm max-w-none">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
